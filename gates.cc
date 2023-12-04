@@ -1,11 +1,32 @@
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 // gate superclasses
 
+class Clock;
+
 class LogicGate {
+protected:
+    Clock* clock = nullptr;
+
 public:
     virtual bool getOutput() const = 0;
+    void connectClock(Clock &clk) {
+        clock = &clk;
+    }
     virtual ~LogicGate() = default;
+};
+
+class UnaryInputGate : public LogicGate {
+protected:
+    LogicGate *input1 = nullptr;
+
+public:
+    void setInput(LogicGate &a) {
+        input1 = &a;
+    }
+    virtual ~UnaryInputGate() = default;
 };
 
 class BinaryInputGate : public LogicGate {
@@ -21,15 +42,22 @@ public:
     virtual ~BinaryInputGate() = default;
 };
 
-class UnaryInputGate : public LogicGate {
-protected:
-    LogicGate *input1 = nullptr;
+class Clock : public LogicGate {
+private:
+    bool state = false;
+    unsigned int interval; // milliseconds
 
 public:
-    void setInput(LogicGate &a) {
-        input1 = &a;
+    Clock(unsigned int interval_ms) : interval(interval_ms) {}
+
+    void tick() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(interval));
+        state = !state;
     }
-    virtual ~UnaryInputGate() = default;
+
+    bool getOutput() const override {
+        return state;
+    }
 };
 
 // gate subclasses
@@ -49,102 +77,138 @@ public:
 };
 
 class AndGate : public BinaryInputGate {
+private:
+    mutable bool lastOutput = false; // last output
+
 public:
     bool getOutput() const override {
-        return (input1 ? input1->getOutput() : false) && (input2 ? input2->getOutput() : false);
+        if (clock && clock->getOutput()) // if clock high
+            lastOutput = (input1 ? input1->getOutput() : false) && (input2 ? input2->getOutput() : false);
+        return lastOutput;
     }
 };
 
 class OrGate : public BinaryInputGate {
+private:
+    mutable bool lastOutput = false; // last output
+
 public:
     bool getOutput() const override {
-        return (input1 ? input1->getOutput() : false) || (input2 ? input2->getOutput() : false);
+        if (clock && clock->getOutput()) // if clock high
+            lastOutput = (input1 ? input1->getOutput() : false) || (input2 ? input2->getOutput() : false);
+        return lastOutput;
     }
 };
 
 class NotGate : public UnaryInputGate {
+private:
+    mutable bool lastOutput = false; // last output
+    
 public:
     bool getOutput() const override {
-        return !(input1 ? input1->getOutput() : false);
+        if (clock && clock->getOutput()) // if clock high
+            lastOutput = !(input1 ? input1->getOutput() : false);
+        return lastOutput;
     }
 };
 
 class NandGate : public BinaryInputGate {
+private:
+    mutable bool lastOutput = false; // last output
+    
 public:
     bool getOutput() const override {
-        return !((input1 ? input1->getOutput() : true) && (input2 ? input2->getOutput() : true));
+        if (clock && clock->getOutput()) // if clock high
+            lastOutput = !((input1 ? input1->getOutput() : true) && (input2 ? input2->getOutput() : true));
+        return lastOutput;
     }
 };
 
 
 class XorGate : public BinaryInputGate {
+private:
+    mutable bool lastOutput = false; // last output
+    
 public:
     bool getOutput() const override {
-        return (input1 ? input1->getOutput() : false) ^ (input2 ? input2->getOutput() : false);
+        if (clock && clock->getOutput()) // if clock high
+            lastOutput = (input1 ? input1->getOutput() : false) ^ (input2 ? input2->getOutput() : false);
+        return lastOutput;
     }
 };
 
 class NorGate : public BinaryInputGate {
+private:
+    mutable bool lastOutput = false; // last output
+    
 public:
     bool getOutput() const override {
-        return !((input1 ? input1->getOutput() : false) || (input2 ? input2->getOutput() : false));
+        if (clock && clock->getOutput()) // if clock high
+            lastOutput = !((input1 ? input1->getOutput() : false) || (input2 ? input2->getOutput() : false));
+        return lastOutput;
     }
 };
 
 class XnorGate : public BinaryInputGate {
+private:
+    mutable bool lastOutput = false; // last output
+    
 public:
     bool getOutput() const override {
-        return !((input1 ? input1->getOutput() : false) ^ (input2 ? input2->getOutput() : false));
+        if (clock && clock->getOutput()) // if clock high
+            lastOutput = !((input1 ? input1->getOutput() : false) ^ (input2 ? input2->getOutput() : false));
+        return lastOutput;
     }
 };
 
 int main() {
-
-    // testing basic gate functionality
-
+    // Initialize gates and clock
     FalseInput F;
     TrueInput T;
-
     AndGate andGate;
     OrGate orGate;
     NotGate notGate;
     NandGate nandGate;
+    XorGate xorGate;
+    NorGate norGate;
+    XnorGate xnorGate;
+    
+    // clock with 500ms intervals
+    Clock clk(500);
 
-    std::cout << "AND:" << std::endl;
-    andGate.setInput(F, F);
-    std::cout << andGate.getOutput() << std::endl;
-    andGate.setInput(F, T);
-    std::cout << andGate.getOutput() << std::endl;
+    // gate-clock connect
+    andGate.connectClock(clk);
+    orGate.connectClock(clk);
+    notGate.connectClock(clk);
+    nandGate.connectClock(clk);
+    xorGate.connectClock(clk);
+    norGate.connectClock(clk);
+    xnorGate.connectClock(clk);
+
+    // gate inputs
     andGate.setInput(T, F);
-    std::cout << andGate.getOutput() << std::endl;
-    andGate.setInput(T, T);
-    std::cout << andGate.getOutput() << std::endl;
-    std::cout << std::endl;
-
-    std::cout << "OR:" << std::endl;
-    orGate.setInput(F, F);
-    std::cout << orGate.getOutput() << std::endl;
     orGate.setInput(F, T);
-    std::cout << orGate.getOutput() << std::endl;
-    orGate.setInput(T, F);
-    std::cout << orGate.getOutput() << std::endl;
-    orGate.setInput(T, T);
-    std::cout << orGate.getOutput() << std::endl;
-    std::cout << std::endl;
-
-    std::cout << "NOT:" << std::endl;
     notGate.setInput(F);
-    std::cout << notGate.getOutput() << std::endl;
-    notGate.setInput(T);
-    std::cout << notGate.getOutput() << std::endl;
-    std::cout << std::endl;
+    nandGate.setInput(T, T);
+    xorGate.setInput(T, F);
+    norGate.setInput(F, F);
+    xnorGate.setInput(T, T);
 
-    std::cout << "NAND:" << std::endl;
-    nandGate.setInput(orGate, andGate);
-    std::cout << nandGate.getOutput() << std::endl;
-    nandGate.setInput(orGate, F);
-    std::cout << nandGate.getOutput() << std::endl;
-    std::cout << std::endl;
+    // simulate clock cycling and gate inputs
+    for (int i = 0; i < 10; ++i) {
+        clk.tick();
+
+        std::cout << "Clock state: " << clk.getOutput();
+        std::cout << " | AND: " << andGate.getOutput();
+        std::cout << " | OR: " << orGate.getOutput();
+        std::cout << " | NOT: " << notGate.getOutput();
+        std::cout << " | NAND: " << nandGate.getOutput();
+        std::cout << " | XOR: " << xorGate.getOutput();
+        std::cout << " | NOR: " << norGate.getOutput();
+        std::cout << " | XNOR: " << xnorGate.getOutput();
+        std::cout << std::endl;
+    }
+
 
     return 0;
 }
