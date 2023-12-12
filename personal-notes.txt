@@ -4,33 +4,26 @@ Understanding RISC-V Architecture:
     Familiarize yourself with the RISC-V specification, which can be found on the official RISC-V website.
     Gate-Level Modeling Basics:
 
-    Understand gate-level modeling. This involves knowing how logic gates (AND, OR, NOT, XOR, etc.) are used to construct more complex digital circuits.
-    Learn how to represent these logic gates and their interconnections in C++.
     Designing the Processor Components:
-
-    Break down the processor into smaller components like ALU (Arithmetic Logic Unit), register file, control unit, memory interface, etc.
-    Design each component at the gate level. This means you will be creating C++ classes or structures representing each component, like gates, flip-flops, multiplexers, etc.
+        Break down the processor into smaller components like ALU (Arithmetic Logic Unit), register file, control unit, memory interface, etc.
+        Design each component at the gate level. This means you will be creating C++ classes or structures representing each component, like gates, flip-flops, multiplexers, etc.
+    
     Implementing Instruction Execution:
-
-    Implement the logic for fetching, decoding, and executing instructions.
-    This involves simulating the processor's behavior cycle-by-cycle, where each cycle includes stages like fetch, decode, execute, memory access, and write-back.
-    Testing and Validation:
+        Implement the logic for fetching, decoding, and executing instructions.
+        This involves simulating the processor's behavior cycle-by-cycle, where each cycle includes stages like fetch, decode, execute, memory access, and write-back.
+        Testing and Validation:
 
     Create testbenches in C++ to validate each component of your processor.
-    Use existing RISC-V binaries or write your own assembly programs to test your processor's functionality.
+        Use existing RISC-V binaries or write your own assembly programs to test your processor's functionality.
+    
     Performance and Optimization:
-
-    Once the basic simulation is working, analyze its performance.
-    Optimize your simulation for speed or accuracy depending on your requirements.
+        Once the basic simulation is working, analyze its performance.
+        Optimize your simulation for speed or accuracy depending on your requirements.
+    
     Toolchain and Environment Setup:
-
-    Set up a development environment with necessary tools like a C++ compiler, debugger, and possibly a version control system.
-    Ensure you have access to libraries or tools that might help with the simulation, such as C++ libraries for bit manipulation or logic operations.
+        Set up a development environment with necessary tools like a C++ compiler, debugger, and possibly a version control system.
+        Ensure you have access to libraries or tools that might help with the simulation, such as C++ libraries for bit manipulation or logic operations.
+    
     Documentation and Maintenance:
-
-    Document your design and code thoroughly.
-    Maintain and update the simulation as needed, possibly extending it to support more features of the RISC-V ISA or to improve its performance.
-    Community and Resources:
-
-    Engage with the RISC-V community for support and resources.
-    Look into existing open-source RISC-V models for reference and inspiration.
+        Document your design and code thoroughly.
+        Maintain and update the simulation as needed, possibly extending it to support more features of the RISC-V ISA or to improve its performance.

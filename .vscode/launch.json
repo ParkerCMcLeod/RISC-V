@@ -20,7 +20,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "cppbuild",
+            "preLaunchTask": "Build C++ File",
             "logging": {
                 "trace": false,
                 "traceResponse": false,

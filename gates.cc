@@ -161,8 +161,8 @@ public:
     }
 };
 
-int main() {
-    // Initialize gates and clock
+void test() {
+    // initialize gates
     FalseInput F;
     TrueInput T;
     AndGate andGate;
@@ -173,10 +173,10 @@ int main() {
     NorGate norGate;
     XnorGate xnorGate;
     
-    // clock with 500ms intervals
-    Clock clk(500);
+    // set clock with 1ms intervals
+    Clock clk(1);
 
-    // gate-clock connect
+    // set gate-clock connect
     andGate.connectClock(clk);
     orGate.connectClock(clk);
     notGate.connectClock(clk);
@@ -185,7 +185,7 @@ int main() {
     norGate.connectClock(clk);
     xnorGate.connectClock(clk);
 
-    // gate inputs
+    // set gate inputs
     andGate.setInput(T, F);
     orGate.setInput(F, T);
     notGate.setInput(F);
@@ -208,7 +208,10 @@ int main() {
         std::cout << " | XNOR: " << xnorGate.getOutput();
         std::cout << std::endl;
     }
+}
 
-
+int main() {
+    test();
+    
     return 0;
 }
